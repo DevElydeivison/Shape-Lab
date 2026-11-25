@@ -1,108 +1,46 @@
-# ShapeLab v3 — Sprint 1
+# ShapeLab v3 — Sprint 2
 
-Aplicação de acompanhamento de treinos, dieta, água, sono, peso e fotos. **Mobile first**, tema escuro preto/branco e arquitetura monorepo.
+Monorepo com frontend React + Vite e backend Express + TypeScript + Prisma/PostgreSQL.
 
-## Tecnologias
+## Requisitos
+- Node.js 20+ (preferencialmente uma versão LTS fixa)
+- npm
+- Docker Desktop para PostgreSQL local (ou banco PostgreSQL próprio)
 
-- `apps/web`: React 18 + TypeScript + Vite
-- `apps/api`: reserva de estrutura para a API Node.js + Express da Sprint 2; **não há servidor implementado**
-- `packages/shared`: modelos TypeScript e fichas/refeições de referência
-- `packages/design-tokens`: variáveis de tema compartilháveis
-- `packages/api-client`: cliente HTTP inicial, ainda não utilizado
-
-## Pré-requisitos
-
-Node.js 20+ e npm 10+.
-
-## Executar localmente
+## Primeira execução
 
 ```bash
 npm install
+docker compose up -d
+cp apps/api/.env.example apps/api/.env
+npm run db:generate
+npm run db:migrate
+npm run dev:api
+```
+
+Em outro terminal:
+
+```bash
 npm run dev
 ```
 
-Abra `http://localhost:5173`.
+Acesse http://localhost:5173. API em http://localhost:3333/api/v1/health.
 
-## Build e verificação
+## Testar login real no frontend
+Copie `apps/web/.env.example` para `apps/web/.env.local`, altere `VITE_ENABLE_API_AUTH=true` e reinicie o Vite. **Por padrão permanece em modo demo**, para manter a versão publicada sem exigir uma API ainda não implantada.
 
-```bash
-npm run typecheck
-npm run build
-npm run dev -w @shapelab/web -- --host 0.0.0.0
-```
+**Atenção:** somente contas/sessões e peso via API estão implementados no backend. Os módulos antigos permanecem locais, não são sincronizados nem segregados por conta. Não use o login como garantia de privacidade dos dados locais.
 
-O resultado de produção é gerado em `apps/web/dist`. Para testar: `npm run preview -w @shapelab/web`.
+## Scripts
+- `npm run dev` — frontend
+- `npm run dev:api` — API
+- `npm run build` — build do site para Vercel (`apps/web/dist`)
+- `npm run typecheck` — tipos do frontend
+- `npm run db:generate` — gerar Prisma Client
+- `npm run db:migrate` — criar/aplicar migração local
+- `npm run build:api` — build da API
 
-## Estrutura
+## Deploy
+O frontend Vite continua estático e pode usar a configuração anterior da Vercel (`apps/web/dist`). **A API não é automaticamente implantada pela configuração do frontend.** Hospede a API em serviço Node.js separado, com PostgreSQL gerenciado, `DATABASE_URL`, `WEB_ORIGIN` e HTTPS; configure `VITE_API_URL` no build do frontend. Cookies cross-site podem exigir domínio compartilhado, política SameSite adequada e proteção CSRF; não habilite autenticação real publicamente sem revisar esses pontos.
 
-```text
-shapelab-v3/
-├── apps/
-│   ├── web/
-│   │   └── src/
-│   │       ├── components/      # UI compartilhada, barra e silhueta
-│   │       ├── features/
-│   │       │   ├── auth/         # Login demonstrativo
-│   │       │   ├── dashboard/    # Resumo e corpo ilustrativo
-│   │       │   ├── training/     # Treinos e cargas
-│   │       │   ├── nutrition/    # Refeições e macros
-│   │       │   ├── habits/       # Água e sono
-│   │       │   ├── progress/     # Peso, histórico e backup
-│   │       │   └── photos/       # Galeria de evolução
-│   │       ├── lib/store.ts      # Persistência e migração
-│   │       └── styles/          # Tema e refinamentos
-│   └── api/                      # Placeholder Sprint 2
-├── packages/
-│   ├── shared/
-│   ├── api-client/
-│   └── design-tokens/
-└── docs/
-```
-
-## Funcionalidades da Sprint 1
-
-- Tela de entrada **demonstrativa** sem senha/autenticação real
-- Dashboard com silhueta simbólica que evolui de acordo com peso registrado
-- Treinos ABCDE, checkboxes por dia e registro de cargas
-- Plano alimentar com 7 refeições, 2 shakes Dark Mass e acompanhamento de macros estimados
-- Água, sono e metas configuráveis
-- Pesagens, histórico de registros, galeria de fotos com compressão
-- Exportação/importação de backups JSON
-- Migração automática de dados de `shapelab-v2` **quando o novo site é aberto na mesma origem do navegador**
-
-## Limitações e segurança
-
-**Não é um aplicativo multiusuário.** Dados são guardados em `localStorage` do dispositivo; a entrada não autentica identidade. Não armazene informações sensíveis em computadores compartilhados. Fotos consomem espaço e podem esgotar o limite do navegador. Não há sincronização entre dispositivos, banco, API ou notificações. As estimativas de alimentação não substituem orientação nutricional.
-
-Para migrar dados de outra origem (ex.: endereço Vercel antigo), exporte o backup na v2 e importe em Evolução > Importar backup JSON. O backup contém fotos e outros dados pessoais: guarde-o com cuidado.
-
-## Sprint 2 sugerida
-
-- Express + TypeScript, PostgreSQL, Prisma, Zod
-- Contas reais, sessões seguras, autorização por usuário
-- API REST versionada e testes de integração
-- Storage privado para fotos
-- Migração dos dados locais para contas autenticadas com consentimento
-
-Consulte `docs/architecture.md`.
-
-
-## Sprint 1.1 — Vida e rotina
-
-Novos módulos em `apps/web/src/features/`: `agenda`, `notes` e `finance`.
-
-- **Agenda:** seleção de data, tarefas com prioridade/conclusão e compromissos com horário.
-- **Anotações:** criar, editar, pesquisar, categorizar, fixar e excluir notas.
-- **Finanças:** contas com saldo inicial, categorias de receita/despesa, lançamentos manuais em centavos, saldo calculado, filtro por mês e exclusão de movimentações.
-- **Persistência:** os três módulos usam a store local existente (`localStorage`), com compatibilidade com registros anteriores e backup JSON.
-
-**Limitações importantes:** o login continua demonstrativo; não há sincronização com banco, instituição bancária ou entre dispositivos. Não armazene senhas ou informações bancárias sigilosas nas notas. Os dados financeiros permanecem no navegador e podem ser perdidos se o armazenamento for limpo. Exporte backups regularmente. A futura integração bancária deverá usar Open Finance com consentimento explícito e provedores autorizados.
-
-### Execução
-
-```bash
-npm install
-npm run dev
-```
-
-Acesse `http://localhost:5173`. Para validar: `npm run typecheck` e `npm run build`.
+Veja [docs/sprint-2.md](docs/sprint-2.md).

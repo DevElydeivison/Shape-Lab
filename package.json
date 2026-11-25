@@ -1,1 +1,23 @@
-{"name":"shapelab","private":true,"version":"3.0.0","packageManager":"npm@10.9.2","workspaces":["apps/*","packages/*"],"scripts":{"dev":"npm run dev -w @shapelab/web","build":"npm run build -w @shapelab/web","typecheck":"npm run typecheck -w @shapelab/web","dev:api":"npm run dev -w @shapelab/api"},"engines":{"node":">=20"}}
+{
+  "name": "shapelab",
+  "private": true,
+  "version": "3.0.0",
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @shapelab/web",
+    "build": "npm run build -w @shapelab/web",
+    "typecheck": "npm run typecheck -w @shapelab/web",
+    "dev:api": "npm run dev -w @shapelab/api",
+    "typecheck:api": "npm run typecheck -w @shapelab/api",
+    "build:api": "npm run build -w @shapelab/api",
+    "db:generate": "npm run db:generate -w @shapelab/api",
+    "db:migrate": "npm run db:migrate -w @shapelab/api"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
