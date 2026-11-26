@@ -7,6 +7,7 @@ export type Note={id:string;title:string;body:string;category:string;updatedAt:s
 export type Account={id:string;name:string;openingCents:number};
 export type FinanceCategory={id:string;name:string;kind:"expense"|"income"};
 export type Transaction={id:string;accountId:string;categoryId:string;kind:"expense"|"income";amountCents:number;date:string;description:string};
+// Campos legados de Agenda e Finanças são preservados somente para compatibilidade com backups anteriores.
 export type Life={tasks:Task[];events:Event[];notes:Note[];accounts:Account[];categories:FinanceCategory[];transactions:Transaction[]};
 export type Data={life:Life;profile:{name:string;email:string;startWeight:number;goal:number};days:Record<string,Day>;weights:{date:string;value:number}[];photos:Photo[];settings:{waterGoal:number;sleepGoal:number}};
 const KEY='shapelab-v3';const initialLife=():Life=>({tasks:[],events:[],notes:[],accounts:[{id:'main',name:'Conta principal',openingCents:0}],categories:[{id:'food',name:'Alimentação',kind:'expense'},{id:'transport',name:'Transporte',kind:'expense'},{id:'housing',name:'Moradia',kind:'expense'},{id:'health',name:'Saúde',kind:'expense'},{id:'leisure',name:'Lazer',kind:'expense'},{id:'other',name:'Outros',kind:'expense'},{id:'salary',name:'Salário',kind:'income'},{id:'extra',name:'Renda extra',kind:'income'}],transactions:[]});const LEGACY='shapelab-v2';const DEFAULT:Data={life:initialLife(),profile:{name:'Atleta',email:'',startWeight:50,goal:60},days:{},weights:[{date:'2026-11-23',value:56.35}],photos:[],settings:{waterGoal:2500,sleepGoal:8}};
@@ -29,5 +30,3 @@ export function sleepHours(d:Day){if(!d.sleepSaved)return 0;const [h,m]=d.sleepS
 export function downloadBackup(d:Data){const url=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`shapelab-backup-${today()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 
 export const uid=()=>crypto.randomUUID();
-export const brl=(cents:number)=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(cents/100);
-export function parseMoney(input:string){const value=Number(input.replace(",","."));return Number.isFinite(value)&&value>0?Math.round(value*100):null}

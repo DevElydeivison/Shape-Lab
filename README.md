@@ -1,4 +1,4 @@
-# ShapeLab v3 — Sprint 2
+# ShapeLab v3 — Sprint 2 (foco em saúde e evolução)
 
 Monorepo com frontend React + Vite e backend Express + TypeScript + Prisma/PostgreSQL.
 
@@ -44,3 +44,24 @@ Copie `apps/web/.env.example` para `apps/web/.env.local`, altere `VITE_ENABLE_AP
 O frontend Vite continua estático e pode usar a configuração anterior da Vercel (`apps/web/dist`). **A API não é automaticamente implantada pela configuração do frontend.** Hospede a API em serviço Node.js separado, com PostgreSQL gerenciado, `DATABASE_URL`, `WEB_ORIGIN` e HTTPS; configure `VITE_API_URL` no build do frontend. Cookies cross-site podem exigir domínio compartilhado, política SameSite adequada e proteção CSRF; não habilite autenticação real publicamente sem revisar esses pontos.
 
 Veja [docs/sprint-2.md](docs/sprint-2.md).
+
+## Módulos ativos
+- Visão geral / Dashboard
+- Treinos
+- Alimentação
+- Hábitos (água e sono)
+- Evolução corporal / peso
+- Fotos de evolução
+- Anotações
+- Login demonstrativo ou autenticação API experimental
+
+**Agenda e Finanças foram removidos da navegação e do código de interface.**
+Os registros anteriores desses módulos, se existentes no `localStorage` ou em backups,
+continuam preservados nos campos legados para evitar perda acidental de dados.
+Eles não são exibidos nem editados pelo ShapeLab nesta versão.
+Para excluir esses dados permanentemente, faça um backup e trate a limpeza separadamente.
+
+## Atualização da versão anterior
+Substitua o projeto pelo conteúdo deste ZIP, execute `npm install` e `npm run build`,
+e publique na Vercel com `Output Directory = apps/web/dist` e raiz do repositório.
+A atualização não exige apagar o armazenamento local do navegador.
